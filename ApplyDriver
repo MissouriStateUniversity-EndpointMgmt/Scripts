@@ -84,18 +84,6 @@
 	# Detect, download and apply drivers during OS deployment with ConfigMgr and check for driver packages that matches an earlier version than what's specified for TargetOSVersion:
 	.\Invoke-CMApplyDriverPackage.ps1 -BareMetal -Endpoint 'CM01.domain.com' -TargetOSName 'Windows 10' -TargetOSVersion 1909 -OSVersionFallback
 
-	# Detect and download drivers during OS upgrade with ConfigMgr:
-	.\Invoke-CMApplyDriverPackage.ps1 -OSUpgrade -Endpoint 'CM01.domain.com' -TargetOSName 'Windows 10' -TargetOSVersion '1909'
-    
-	# Detect, download and update a device with latest drivers for an running operating system using ConfigMgr:
-	.\Invoke-CMApplyDriverPackage.ps1 -DriverUpdate -Endpoint 'CM01.domain.com'
-
-	# Detect and download (pre-caching content) during OS upgrade with ConfigMgr:
-	.\Invoke-CMApplyDriverPackage.ps1 -PreCache -Endpoint 'CM01.domain.com' -TargetOSName 'Windows 10' -TargetOSVersion '1909'
-
-	# Detect and download (pre-caching content) to a custom path during OS upgrade with ConfigMgr:
-	.\Invoke-CMApplyDriverPackage.ps1 -PreCache -Endpoint 'CM01.domain.com' -TargetOSName 'Windows 10' -TargetOSVersion '1909' -PreCachePath 'C:\Windows\Temp\DriverPackage'
-
 	# Run in a debug mode for testing purposes (to be used locally on the computer model):
 	.\Invoke-CMApplyDriverPackage.ps1 -DebugMode -Endpoint 'CM01.domain.com' -UserName 'svc@domain.com' -Password 'svc-password' -TargetOSName 'Windows 10' -TargetOSVersion '1909'
 
@@ -247,7 +235,7 @@ param(
 	[parameter(Mandatory = $false, ParameterSetName = "Debug")]
 	[switch]$OSVersionFallback
 )
-Begin {
+
 	# Load Microsoft.SMS.TSEnvironment COM object
 	if ($PSCmdLet.ParameterSetName -notlike "Debug") {
 		try {
@@ -260,8 +248,8 @@ Begin {
 	
 	# Enable TLS 1.2 support for downloading modules from PSGallery
 	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-}
-Process {
+
+
 	# Set Log Path
 	switch ($PSCmdLet.ParameterSetName) {
 		"Debug" {
@@ -2202,8 +2190,8 @@ Process {
 		# Main try-catch block was triggered, this should cause the script to fail with exit code 1
 		exit 1
 	}
-}
-End {
+
+
 	if ($PSCmdLet.ParameterSetName -notlike "Debug") {
 		# Reset OSDDownloadContent.exe dependant variables for further use of the task sequence step
 		Invoke-CMResetDownloadContentVariables
@@ -2211,4 +2199,4 @@ End {
 	
 	# Write final output to log file
 	Write-CMLogEntry -Value "[ApplyDriverPackage]: Completed Apply Driver Package process" -Severity 1
-}
+
